@@ -1,0 +1,72 @@
+# Function to connect to the database
+connect_to_database <- function() {
+  rm(list=ls())
+  library(RJDBC)
+  library(rJava)
+  library(dplyr)
+
+  # Connect to the server 
+  drv <- JDBC(driverClass  = "com.microsoft.sqlserver.jdbc.SQLServerDriver", classPath = "/home/user/R/Projects/R-DCM/Drivers/sqljdbc_7.0/enu/mssql-jdbc-7.0.0.jre8.jar")
+  
+  # Replace 'example-server', 'example-database', 'your-username', and 'your-password' with your specific information
+  conn <- dbConnect(drv,'jdbc:sqlserver://example-server:1433;databaseName=example-database','your-username','your-password')
+
+  # Get table list 
+  table.list <- dbGetQuery(conn, "SELECT * FROM INFORMATION_SCHEMA.TABLES")
+  table.list$queryname <- paste0(table.list$TABLE_SCHEMA, ".", table.list$TABLE_NAME)
+
+  return(conn)
+}
+
+# Function to retrieve sales data by zip
+get_sales_data_by_zip <- function(conn) {
+  query <- "SELECT TOP 1000 * FROM YourSchema.YourSalesTable"  # Replace with your schema and table names
+  sales_data <- dbGetQuery(conn, query)
+  return(sales_data)
+}
+
+# Function to calculate distance
+calculate_distance <- function(store_data, zipcode_data, radius_limit = 200) {
+  # (Your distance calculation code)
+  return(distance_result)
+}
+
+# Function to merge sales data
+merge_sales_data <- function(sales_data, distance_data) {
+  # (Your merge code)
+  return(merged_data)
+}
+
+# Function to calculate store radius
+calculate_store_radius <- function(merged_data) {
+  # (Your store radius calculation code)
+  return(store_radius_data)
+}
+
+# Function to perform rolling sum for 75% of sales
+rolling_sum_75_percent <- function(merged_data) {
+  # (Your rolling sum code)
+  return(rolling_sum_data)
+}
+
+# Main function to execute the entire analysis
+main_analysis <- function() {
+  conn <- connect_to_database()
+  sales_data <- get_sales_data_by_zip(conn)
+  distance_data <- calculate_distance(store_data, zipcode_data)
+  merged_data <- merge_sales_data(sales_data, distance_data)
+  store_radius_data <- calculate_store_radius(merged_data)
+  rolling_sum_data <- rolling_sum_75_percent(merged_data)
+
+  # Save the results to CSV files
+  write.csv(store_radius_data, "~/R/Projects/R-DCM/Clients/Analysis/Assets/Outputs/Store_Radius.csv")
+  write.csv(rolling_sum_data, "~/R/Projects/R-DCM/Clients/Analysis/Assets/Outputs/Store_75pct.csv")
+  
+  # (Additional code or analysis if needed)
+  
+  # Close the database connection
+  dbDisconnect(conn)
+}
+
+# Execute the main analysis
+main_analysis()
